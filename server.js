@@ -9,6 +9,8 @@ const session = require('koa-session');
 dotenv.config();
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
+const getSubscriptionUrl = require('./server/getSubscriptionUrl');
+
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -38,13 +40,15 @@ server.use(
       'read_third_party_fulfillment_orders',
       'read_analytics'
     ],
-      afterAuth(ctx) {
-        // const { shop, accessToken } = ctx.session;
+      async afterAuth(ctx) {
+        const { shop,accessToken } = ctx.session;
         // ctx.redirect('/');
-        const urlParams = new URLSearchParams(ctx.request.url);
-        const shop = urlParams.get('shop');
-
-        ctx.redirect(`/?shop=${shop}`);
+        // const urlParams = new URLSearchParams(ctx.request.url);
+        // const shop = urlParams.get('shop');
+        // ctx.redirect(`/?shop=${shop}`);
+        const returnUrl = `${process.env.HOST}?shop=${shop}`;
+        const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
+        ctx.redirect(subscriptionUrl);
       },
     }),
   );

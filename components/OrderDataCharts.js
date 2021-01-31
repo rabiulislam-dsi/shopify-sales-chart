@@ -8,7 +8,6 @@ import {
 import {lineColors,pieColors} from '../utils/colors';
 
 const OrdersLineChart = (props) =>{
-    console.log('line working');
     const {lineChartData,productTypes} = props;
     const Lines = productTypes.map((elm,idx)=>(           
         <Line
@@ -34,9 +33,7 @@ const OrdersLineChart = (props) =>{
 }
 
 const OrdersPieChart= (props) =>{
-    console.log('pie working');
     const {pieChartData}=props;
-    console.log(pieChartData);
     return (
         <PieChart width={450} height={250}>
             <Pie data={pieChartData} cx="50%" cy="50%" outerRadius={80} label>
@@ -52,7 +49,6 @@ const OrdersPieChart= (props) =>{
 }
 
 const OrdersBarChart= (props) =>{
-    console.log('bar working');
     const {countryBarChartData}=props;
     return (
         <RadialBarChart 
