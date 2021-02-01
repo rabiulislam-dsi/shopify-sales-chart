@@ -9,6 +9,11 @@ import {lineColors,pieColors} from '../utils/colors';
 
 const OrdersLineChart = (props) =>{
     const {lineChartData,productTypes} = props;
+    if(lineChartData.length==0){
+        return (
+            <div style={{margin:10}}>No Data Found</div>
+        );
+    }
     const Lines = productTypes.map((elm,idx)=>(           
         <Line
         key={elm.node+idx}
@@ -34,6 +39,11 @@ const OrdersLineChart = (props) =>{
 
 const OrdersPieChart= (props) =>{
     const {pieChartData}=props;
+    if(pieChartData.length==0){
+        return (
+            <div style={{margin:20}}>No Data Found</div>
+        );
+    }
     return (
         <PieChart width={450} height={250}>
             <Pie data={pieChartData} cx="50%" cy="50%" outerRadius={80} label>
@@ -50,6 +60,11 @@ const OrdersPieChart= (props) =>{
 
 const OrdersBarChart= (props) =>{
     const {countryBarChartData}=props;
+    if(countryBarChartData.length==0){
+        return (
+            <div style={{margin:20}}>No Data Found</div>
+        );
+    }
     return (
         <RadialBarChart 
             width={450} 

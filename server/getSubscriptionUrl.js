@@ -1,15 +1,16 @@
 const getSubscriptionUrl = async (accessToken, shop, returnUrl = process.env.HOST) => {
+    const dev = process.env.NODE_ENV !== 'production';
     const query = JSON.stringify({
       query: `mutation {
         appSubscriptionCreate(
           name: "Super Duper Plan"
           returnUrl: "${returnUrl}"
-          test: true
+          test: ${dev}
           lineItems: [
             {
               plan: {
                 appRecurringPricingDetails: {
-                  price: { amount: 0, currencyCode: USD }
+                  price: { amount: 0.01, currencyCode: USD }
                 }
               }
             }
@@ -38,6 +39,8 @@ const getSubscriptionUrl = async (accessToken, shop, returnUrl = process.env.HOS
     })
   
     const responseJson = await response.json();
+    console.log(responseJson);
+    console.log(responseJson.data.appSubscriptionCreate.userErrors);
     return responseJson.data.appSubscriptionCreate.confirmationUrl;
   };
   
