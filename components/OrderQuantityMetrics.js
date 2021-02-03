@@ -6,7 +6,7 @@ import {transformResponseToChartData,getLastNDays} from '../utils/helpers';
 import {OrdersLineChart,OrdersPieChart,OrdersBarChart} from './OrderDataCharts';
 
 const GET_FULFILLMENT_ORDERS = gql`
-  query	{
+  query($cursor: String){
     shop	{
         id
         name
@@ -16,7 +16,7 @@ const GET_FULFILLMENT_ORDERS = gql`
             node
           }
         }
-        fulfillmentOrders(first:10, includeClosed:true) {
+        fulfillmentOrders(first:10, includeClosed:true, after:$cursor) {
           edges {
             node {
               status
@@ -48,26 +48,57 @@ const GET_FULFILLMENT_ORDERS = gql`
                 }
               }
             }
+            cursor
+          }
+          pageInfo{
+						hasNextPage
           }
         }
     }
   }
 `;
 
+function getLastCursorInResponse(data){
+  const orders = data.shop.fulfillmentOrders.edges;
+  if(orders.length==0) return null;
+  const lastItemInOrders = orders[orders.length - 1];
+  //console.log(lastItemInOrders);
+  return lastItemInOrders.cursor;
+}
+
 class OrderQuantityMetrics extends React.Component {
+  state ={
+    cursor:null,
+    hasNextPage:true,
+    orders:[],
+    productTypes:[]
+  };
+
   render() {
+    const {cursor,hasNextPage}=this.state;
     const lastDays=getLastNDays(7);
     return (
-      <Query query={GET_FULFILLMENT_ORDERS}>
-        {({ data, loading, error }) => {
+      <Query query={GET_FULFILLMENT_ORDERS} variables={{cursor}} onCompleted={(data)=>{
+        if(data && hasNextPage){
+          this.setState({
+            hasNextPage:data.shop.fulfillmentOrders.pageInfo.hasNextPage,
+            cursor:getLastCursorInResponse(data),
+            orders:[...this.state.orders,...data.shop.fulfillmentOrders.edges],
+            productTypes:[...data.shop.productTypes.edges]
+          });
+        }
+      }}>
+        {({ loading, error }) => {
+
           if (loading) return <div>Loading…</div>;
           if (error) return <div>{error.message}</div>;
+
           const {
             productTypes,
             lineChartData,
             pieChartData,
             countryBarChartData
-          } = transformResponseToChartData(data,lastDays);
+          } = transformResponseToChartData(this.state.productTypes,this.state.orders,lastDays);
           return (
               <>
                 <Card title="Sales Report Per Product and Product-Type">

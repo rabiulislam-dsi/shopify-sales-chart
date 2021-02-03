@@ -1,9 +1,9 @@
 import moment from 'moment';
 import {barColors} from './colors';
 
-export const transformResponseToChartData = (responseData,lastDays) =>{
-    const productTypes = responseData.shop.productTypes.edges;
-    const fulfillmentOrders = responseData.shop.fulfillmentOrders.edges;
+export const transformResponseToChartData = (productTypesFromRes,orders,lastDays) =>{
+    const productTypes = productTypesFromRes;
+    const fulfillmentOrders = orders;
     const countryWiseProductQuantity = {};
     const pieChartDataUnsorted=[];
 
@@ -51,14 +51,14 @@ export const transformResponseToChartData = (responseData,lastDays) =>{
     const countryBarChartData = Object.entries(countryWiseProductQuantity)
                 .map((e,i) => ( { name:[e[0]],productQuantity: e[1],fill:barColors[i] } ))
                 .sort((a,b) => (a.productQuantity> b.productQuantity) ? 1 : ((b.productQuantity > a.productQuantity) ? -1 : 0));
-    
+
     return {productTypes,lineChartData,pieChartData,countryBarChartData};
 }
 
 export const getLastNDays=(n)=>{
-    const today = moment();
+    const tomorrow = moment().add(1,'d');
     const res = Array(n).fill().map(
-      () => today.subtract(1, 'd').format('YYYY-MM-DD')
+      () => tomorrow.subtract(1, 'd').format('YYYY-MM-DD')
     );
     return res;
 }

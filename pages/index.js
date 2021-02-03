@@ -4,13 +4,6 @@ import OrderQuantityMetrics from '../components/OrderQuantityMetrics';
 
 const Index = () => (
   <Page>
-    <TitleBar
-      title="Sample App"
-      primaryAction={{
-        content: 'Go to orders page',
-        onAction:()=>{console.log('clicked')}
-      }}
-    />
     <div style={{marginTop:50}}>
                 
     </div>
