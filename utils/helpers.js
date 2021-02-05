@@ -22,7 +22,7 @@ export const transformResponseToChartData = (productTypesFromRes,orders,lastDays
     //now just find product (date,count) and then update in template
     for(let i = 0 ; i < fulfillmentOrders.length ; i++){
       const orderDate = moment(fulfillmentOrders[i].node.order.createdAt).format('YYYY-MM-DD');
-      const shippingAddressCountry = fulfillmentOrders[i].node.order.shippingAddress.country?fulfillmentOrders[i].node.order.shippingAddress.country:"Unknown";
+      const shippingAddressCountry = fulfillmentOrders[i].node.order.shippingAddress?fulfillmentOrders[i].node.order.shippingAddress.country:"Unknown";
       for(let j = 0 ; j < fulfillmentOrders[i].node.lineItems.edges.length ; j++){
         const singleProduct = fulfillmentOrders[i].node.lineItems.edges[j].node;
         const productQuantity= singleProduct.totalQuantity;

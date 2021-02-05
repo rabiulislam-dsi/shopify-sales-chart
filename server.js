@@ -37,7 +37,8 @@ server.use(
       'read_draft_orders',
       'read_locations',
       'read_fulfillments',
-      'read_assigned_fulfillment_orders'
+      'read_assigned_fulfillment_orders',
+      'read_merchant_managed_fulfillment_orders'
     ],
       async afterAuth(ctx) {
         const { accessToken } = ctx.session;
