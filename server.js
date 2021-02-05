@@ -10,7 +10,7 @@ const { createReadStream } = require('fs');
 dotenv.config();
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
-const getSubscriptionUrl = require('./server/getSubscriptionUrl');
+
 const Router = require('koa-router');
 const {receiveWebhook, registerWebhook} = require('@shopify/koa-shopify-webhooks');
 
@@ -33,19 +33,15 @@ server.use(
       apiKey: SHOPIFY_API_KEY,
       secret: SHOPIFY_API_SECRET_KEY,
       scopes: ['read_products',
-      'read_product_listings',
-      'read_customers',
       'read_orders',
       'read_draft_orders',
       'read_locations',
       'read_fulfillments',
-      'read_assigned_fulfillment_orders',
-      'read_merchant_managed_fulfillment_orders',
-      'read_third_party_fulfillment_orders',
-      'read_analytics'
+      'read_assigned_fulfillment_orders'
     ],
       async afterAuth(ctx) {
-        const { shop,accessToken } = ctx.session;
+        const { accessToken } = ctx.session;
+        const { shop } = ctx.state.shopify;
         // ctx.redirect('/');
         // const urlParams = new URLSearchParams(ctx.request.url);
         // const shop = urlParams.get('shop');
@@ -81,10 +77,11 @@ server.use(
           shop,
           apiVersion: ApiVersion.October20
         });
+        // Access token and shop available in ctx.state.shopify
+        
 
-        const returnUrl = `${process.env.HOST}?shop=${shop}`;
-        const subscriptionUrl = await getSubscriptionUrl(accessToken, shop, returnUrl);
-        ctx.redirect(subscriptionUrl);
+        // Redirect to app with shop parameter upon auth
+        ctx.redirect(`/?shop=${shop}`);
       },
     }),
   );
